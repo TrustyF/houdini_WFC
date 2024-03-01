@@ -17,17 +17,7 @@ def main():
         if id in processed:
             continue
 
-        output.append(
-            {
-                "piece": id,
-                "side_hash": {
-                    "z+": (hashes[1]),
-                    "z-": (hashes[3]),
-                    "x+": (hashes[0]),
-                    "x-": (hashes[2]),
-                },
-            }
-        )
+        output.append({"piece": id, "side_hash": hashes})
 
         processed.append(id)
 

@@ -20,17 +20,18 @@ def main():
             if piece["piece"] == compare_piece["piece"]:
                 continue
 
-            if piece["side_hash"]["x+"] == compare_piece["side_hash"]["x-"]:
-                matched["x+"].append(compare_piece["piece"])
+            for side, side_label in enumerate(["x+", "z+", "x-", "z-"]):
 
-            if piece["side_hash"]["x-"] == compare_piece["side_hash"]["x+"]:
-                matched["x-"].append(compare_piece["piece"])
+                for rot in range(4):
 
-            if piece["side_hash"]["z+"] == compare_piece["side_hash"]["z-"]:
-                matched["z+"].append(compare_piece["piece"])
+                    def wrap_i(i):
+                        return i % 4
 
-            if piece["side_hash"]["z-"] == compare_piece["side_hash"]["z+"]:
-                matched["z-"].append(compare_piece["piece"])
+                    if (
+                        piece["side_hash"][wrap_i(side)]
+                        == compare_piece["side_hash"][wrap_i(side + rot + 2)]
+                    ):
+                        matched[side_label].append(f'{compare_piece["piece"]}_{rot}')
 
         piece["side_piece"] = matched
 
