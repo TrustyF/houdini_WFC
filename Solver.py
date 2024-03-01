@@ -7,7 +7,9 @@ geo = node.geometry()
 
 rules = []
 # import rules
-with open("$HIP/JSON/rules.json") as json_file:
+with open(
+    "C:\\A_Mod\\A_Projects\\Houdini\\Backrooms_WFC\\JSON\\rules.json"
+) as json_file:
     rules = json.load(json_file)
 
 total_points = len(geo.iterPoints())
@@ -80,8 +82,9 @@ def solve(i):
     return True
 
 
-for i in range(iter):
-    for point in geo.points():
-        if solve(point.number()):
-            break
-    # solve(i)
+def main():
+    for i in range(iter):
+        for point in geo.points():
+            if solve(point.number()):
+                break
+        # solve(i)

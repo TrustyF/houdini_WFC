@@ -4,32 +4,37 @@ import json
 node = hou.pwd()
 geo = node.geometry()
 
-with open("$HIP/JSON/rules.json") as json_file:
-    rules = json.load(json_file)
 
-for piece in rules:
+def main():
+    with open(
+        "C:\\A_Mod\\A_Projects\\Houdini\\Backrooms_WFC\\JSON\\rules.json"
+    ) as json_file:
+        rules = json.load(json_file)
 
-    matched = {"x+": [], "z-": [], "z+": [], "x-": []}
+    for piece in rules:
 
-    for compare_piece in rules:
+        matched = {"x+": [], "z-": [], "z+": [], "x-": []}
 
-        if piece["piece"] == compare_piece["piece"]:
-            continue
+        for compare_piece in rules:
 
-        if piece["side_hash"]["x+"] == compare_piece["side_hash"]["x-"]:
-            matched["x+"].append(compare_piece["piece"])
+            if piece["piece"] == compare_piece["piece"]:
+                continue
 
-        if piece["side_hash"]["x-"] == compare_piece["side_hash"]["x+"]:
-            matched["x-"].append(compare_piece["piece"])
+            if piece["side_hash"]["x+"] == compare_piece["side_hash"]["x-"]:
+                matched["x+"].append(compare_piece["piece"])
 
-        if piece["side_hash"]["z+"] == compare_piece["side_hash"]["z-"]:
-            matched["z+"].append(compare_piece["piece"])
+            if piece["side_hash"]["x-"] == compare_piece["side_hash"]["x+"]:
+                matched["x-"].append(compare_piece["piece"])
 
-        if piece["side_hash"]["z-"] == compare_piece["side_hash"]["z+"]:
-            matched["z-"].append(compare_piece["piece"])
+            if piece["side_hash"]["z+"] == compare_piece["side_hash"]["z-"]:
+                matched["z+"].append(compare_piece["piece"])
 
-    piece["side_piece"] = matched
+            if piece["side_hash"]["z-"] == compare_piece["side_hash"]["z+"]:
+                matched["z-"].append(compare_piece["piece"])
 
+        piece["side_piece"] = matched
 
-with open("$HIP/JSON/rules.json", "w") as json_file:
-    json.dump(rules, json_file, indent=2)
+    with open(
+        "C:\\A_Mod\\A_Projects\\Houdini\\Backrooms_WFC\\JSON\\rules.json", "w"
+    ) as json_file:
+        json.dump(rules, json_file, indent=2)

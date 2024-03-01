@@ -9,26 +9,29 @@ processed = []
 output = []
 
 
-for point in geo.points():
-    id = point.attribValue("piece")
-    hashes = point.attribValue("side_hash")
+def main():
+    for point in geo.points():
+        id = point.attribValue("piece")
+        hashes = point.attribValue("side_hash")
 
-    if id in processed:
-        continue
+        if id in processed:
+            continue
 
-    output.append(
-        {
-            "piece": id,
-            "side_hash": {
-                "z+": (hashes[1]),
-                "z-": (hashes[3]),
-                "x+": (hashes[0]),
-                "x-": (hashes[2]),
-            },
-        }
-    )
+        output.append(
+            {
+                "piece": id,
+                "side_hash": {
+                    "z+": (hashes[1]),
+                    "z-": (hashes[3]),
+                    "x+": (hashes[0]),
+                    "x-": (hashes[2]),
+                },
+            }
+        )
 
-    processed.append(id)
+        processed.append(id)
 
-with open("$HIP/JSON/rules.json", "w") as json_file:
-    json.dump(output, json_file, indent=2)
+    with open(
+        "C:\\A_Mod\\A_Projects\\Houdini\\Backrooms_WFC\\JSON\\rules.json", "w"
+    ) as json_file:
+        json.dump(output, json_file, indent=2)
