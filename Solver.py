@@ -5,77 +5,65 @@ import random
 node = hou.pwd()
 geo = node.geometry()
 
-rules = []
 # import rules
-with open(
-    "C:\\A_Mod\\A_Projects\\Houdini\\Backrooms_WFC\\JSON\\rules.json"
-) as json_file:
+with open("C:\\A_Mod\\A_Projects\\Houdini\\Backrooms_WFC\\JSON\\rules.json") as json_file:
     rules = json.load(json_file)
 
-total_points = len(geo.iterPoints())
-iter = node.inputs()[1].geometry().attribValue("iteration")
+rows = 10
+cols = 10
+grid = []
 
-lowest_enthropy = 100
+geo.addAttrib(hou.attribType.Point, "piece", -1)
+geo.addAttrib(hou.attribType.Point, "rotation", 0)
+
+
+def define_grid():
+    global grid
+    possibilities = [f'{k}_{x}' for x in range(4) for k in range(len(rules))]
+    grid = [[possibilities for i in range(cols)] for j in range(rows)]
+
+
+def make_grid():
+    for i in range(rows):
+        for j in range(cols):
+            point = geo.createPoint()
+            point.setPosition((i, 0, j))
+
+            if len(grid[i][j]) < 2:
+                point.setAttribValue("piece", int(grid[i][j][0].split("_")[0]))
+                point.setAttribValue("rotation", int(grid[i][j][0].split("_")[1]))
 
 
 def get_random_piece():
-    return rules[random.randint(0, len(rules) - 1)]["piece"]
+    return str(rules[random.randint(0, len(rules) - 1)]["piece"]) + "_0"
 
 
-def solve(i):
-    global lowest_enthropy
+def get_lowest_entropy():
+    smallest = -1
+    index = -1
 
-    def collapse(ptnum):
-        poss = possibility[random.randint(0, len(possibility) - 1)]
-        geo.point(i).setAttribValue("piece", int(poss.split("_")[0]))
-        geo.point(i).setAttribValue("rotations", int(poss.split("_")[1]))
-        geo.point(i).setAttribValue("possibility", [])
+    for i in range(rows):
+        for j in range(cols):
+            if len(grid[i][j]) < smallest or smallest == -1:
+                smallest = len(grid[i][j])
+                index = (i, j)
 
-    piece = geo.point(i).attribValue("piece")
-    possibility = geo.point(i).attribValue("possibility")
+    return index
 
-    # skip if entropy is too high
-    if len(possibility) > lowest_enthropy:
-        return
 
-    # collapse if possibility is 1
-    if len(possibility) <= 2 and len(possibility) > 0 and piece == -1:
-        collapse(i)
-        return
+def propagate(index):
+    x, y = index
+    # look top
+    if y <= cols:
 
-    mapping = [[i + 1, "z+"], [i - 1, "z-"], [i - 10, "x+"], [i + 10, "x-"]]
 
-    for side_cell in mapping:
-
-        # skip out of bounds
-        if side_cell[0] < 0 or side_cell[0] > total_points - 1:
-            continue
-
-        # print(side_cell[0])
-
-        # prep attributes
-        side_piece = geo.point(side_cell[0]).attribValue("piece")
-
-        # skip if solved
-        if side_piece != -1:
-            continue
-
-        current_poss = geo.point(side_cell[0]).attribValue("possibility")
-        rule_poss = rules[piece]["side_piece"][side_cell[1]]
-        result_list = [x for x in current_poss if x in rule_poss]
-        geo.point(side_cell[0]).setAttribValue("possibility", result_list)
-        lowest_enthropy = len(result_list)
 
 
 def main():
-    global lowest_enthropy
+    define_grid()
+    grid[1][2] = [get_random_piece()]
 
-    for point in geo.points():
-        num_poss = len(point.attribValue("possibility"))
-        if num_poss < lowest_enthropy:
-            lowest_enthropy = num_poss
+    for i in range(10):
+        propagate(get_lowest_entropy())
 
-    for i in range(iter):
-        for point in geo.points():
-            solve(point.number())
-        # solve(i)
+    make_grid()
