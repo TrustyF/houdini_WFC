@@ -11,15 +11,15 @@ output = []
 
 def main():
     for point in geo.points():
-        id = point.attribValue("piece")
+        p_id = point.attribValue("piece")
         hashes = point.attribValue("side_hash")
 
-        if id in processed:
+        if p_id in processed:
             continue
 
-        output.append({"piece": id, "side_hash": hashes})
+        output.append({"piece": p_id, "side_hash": hashes})
 
-        processed.append(id)
+        processed.append(p_id)
 
     with open(
         "C:\\A_Mod\\A_Projects\\Houdini\\Backrooms_WFC\\JSON\\rules.json", "w"
